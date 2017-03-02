@@ -37,7 +37,7 @@ public class World {
 	public int time = 0;
 	
 	//SEPARATION OF 3 IN GAME LEVELS
-	public int[] levels = new int[] {0, 160, 220};
+	public int[] levels = new int[] {0, 120, 220};
 	
 	//ANIMATION DATA
 	private float animationLevel;
@@ -181,6 +181,13 @@ public class World {
 				boat.velocity = new Vector2f();
 			}
 		}
+		
+		//GENERATE WORLD SPRITE(TESTING ONLY)
+		/*int[] pixels = new int[width * height];
+		for(int i = 0; i < width * height; i++) {
+			pixels[i] = (int) ((array[i] / 5f) * 0xffffff);
+		}
+		sprite = new Sprite(pixels, width, height);*/
 	}
 	
 	public void render(Renderer renderer) {
@@ -207,6 +214,7 @@ public class World {
 					Tile tile8 = Tile.tiles.get(getTile(x - 1, y + 1));
 					Tile tilef = null;
 					ArrayList<Sprite> blendmaps = new ArrayList<Sprite>();
+					
 					if(tile1.connect == 2) {
 						tilef = tile1;
 						blendmaps.add(tile.blendmaps.get(0));
@@ -251,6 +259,11 @@ public class World {
 				else {
 					//RENDER TILE WITHOUT BLENDMAPS
 					tile.render(tx - renderer.position.x, ty - renderer.position.y, renderer);
+				}
+				
+				//SURFACE GRASS OVERLAY
+				if(renderer.useBlendMaps && y == 0 && tile.id == 1) {
+					Tile.tiles.get(6).render(tx - renderer.position.x, ty - renderer.position.y - Tile.height, renderer);
 				}
 			}
 		}
@@ -385,11 +398,18 @@ public class World {
 			array[i] = 0;
 			waterArray[i] = 0;
 		}
+		
 		Noise2D noise = new Noise2D(seed, 5, 1f, 1/64f);
 		
-		for(int y = 0; y < height; y++) {
-			for(int x = 0; x < width; x++) {
+		for(int x = 0; x < width; x++) {
+			for(int y = 0; y < height; y++) {
 				float value = Math.abs(noise.generate(x, y));
+				
+				//SIDE WALLS
+				if(x < 11 || x > width - 12) {
+					value = 1f;
+				}
+				
 				if(value < .15) {
 					array[x + y * width] = 0;
 				}
@@ -420,7 +440,12 @@ public class World {
 					if(y >= levels[2] + 9 && y < levels[2] + 20 && x < width / 2 + 8 && x > width / 2 - 8) {
 						array[x + y * width] = 0;
 						if(y == levels[2] + 16 && x < width / 2 + 6 && x > width / 2 - 6) array[x + y * width] = 5;
-						if(y == levels[2] + 10 && (x == width / 2 + 3 || x == width / 2 - 3)) array[x +  y * width] = 5;
+						if(y == levels[2] + 10 && (x == width / 2 + 3 || x == width / 2 - 3)) array[x + y * width] = 5;
+					}
+					
+					//SIDE WALLS
+					if(x < 11 || x > width - 12) {
+						array[x + y * width] = 5;
 					}
 				}
 			}
@@ -445,10 +470,13 @@ public class World {
 			}
 		}
 		
+		//GUARDS
+		//game.enemies.add(new Guard(new Vector2f(0 * Tile.width, -1 * Tile.height), game));
+		
 		//GENERATE WORLD SPRITE(TESTING ONLY)
 		int[] pixels = new int[width * height];
 		for(int i = 0; i < width * height; i++) {
-			pixels[i] = (int) ((array[i] / 3f) * 0xffffff);
+			pixels[i] = (int) ((array[i] / 5f) * 0xffffff);
 		}
 		sprite = new Sprite(pixels, width, height);
 	}

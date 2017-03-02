@@ -53,10 +53,15 @@ public class UIManager {
 	public UIContainer arrow;
 	public UIContainer jump;
 	public UIContainer rope;
+	public UIContainer restart;
 	
 	//KEYBOARD GUI CONTROL INDICES
 	public int mainSelectedIndex = 1;
 	public int optionsSelectedIndex = 2;
+	public int restartConfirmationSelectedIndex = 1;
+	
+	//GAME RESTART CONFIRMATION
+	public UIContainer restartConfirmation;
 	
 	public UIManager(Game game) {
 		this.game = game;
@@ -123,7 +128,33 @@ public class UIManager {
 				game.listener.keys[10] = false;
 				game.listener.keys[32] = false;
 			}
+			//EXIT
 			if(game.listener.keys[8] || game.listener.keys[27]) options.components.get(1).activate(EventType.LEFTRELEASE);
+		}
+		
+		//RESTART CONFIRMATION SELECTION
+		if(restartConfirmation.visible) {
+			if(game.listener.keys[38]) {
+				restartConfirmation.components.get(restartConfirmationSelectedIndex).activate(EventType.HOVEREXIT);
+				restartConfirmationSelectedIndex--;
+				if(restartConfirmationSelectedIndex < 1) restartConfirmationSelectedIndex = 2;
+				restartConfirmation.components.get(restartConfirmationSelectedIndex).activate(EventType.HOVERENTER);
+				game.listener.keys[38] = false;
+			}
+			if(game.listener.keys[40]) {
+				restartConfirmation.components.get(restartConfirmationSelectedIndex).activate(EventType.HOVEREXIT);
+				restartConfirmationSelectedIndex++;
+				if(restartConfirmationSelectedIndex > 2) restartConfirmationSelectedIndex = 1;
+				restartConfirmation.components.get(restartConfirmationSelectedIndex).activate(EventType.HOVERENTER);
+				game.listener.keys[40] = false;
+			}
+			if(game.listener.keys[10] || game.listener.keys[32]) {
+				restartConfirmation.components.get(restartConfirmationSelectedIndex).activate(EventType.LEFTRELEASE);
+				game.listener.keys[10] = false;
+				game.listener.keys[32] = false;
+			}
+			//NO
+			if(game.listener.keys[8] || game.listener.keys[27]) restartConfirmation.components.get(2).activate(EventType.LEFTRELEASE);
 		}
 		
 		//GAMEOVER GUI
@@ -179,7 +210,7 @@ public class UIManager {
 		main = new UIContainer(new Vector2f(), game.renderer.width, game.renderer.height, 0x000000, .7f);
 		main.index = 1;
 		UIImage title = new UIImage(new Vector2f(game.renderer.width / 2 - 128, 32), 256, 64, new Sprite(new SpriteSheet("/gui/title.png")));
-		UIButton playButton = new UIButton(new Vector2f(game.renderer.width / 2 - 128, 128), 256, 48, 0x777777);
+		UIButton playButton = new UIButton(new Vector2f(game.renderer.width / 2 - 128, 128), 256, 48, 0x999999);
 		playButton.string = "PLAY";
 		playButton.scale = 4;
 		UIButton controlsButton = new UIButton(new Vector2f(game.renderer.width / 2 - 128, 192), 256, 48, 0x777777);
@@ -522,12 +553,16 @@ public class UIManager {
 		options.add(transparencyButton);
 		options.add(blendMapsButton);
 		
+		
+		//SCORE AND LEVEL TEXTBOX
 		profile = new UIContainer(new Vector2f(0, 24), game.renderer.width, 64);
 		UITextBox profileScore = new UITextBox("SCORE 0", 3, new Vector2f(24, 8));
-		UITextBox profileLevel = new UITextBox("LEVEL 3", 3, new Vector2f(game.renderer.width - 96, 8));
+		UITextBox profileLevel = new UITextBox("LEVEL 1", 3, new Vector2f(game.renderer.width - 96, 8));
 		profile.add(profileScore);
 		profile.add(profileLevel);
 		
+		
+		//HEARTS (HEALTH)
 		health = new UIContainer(new Vector2f(game.renderer.width / 2 - 80, 24), 160, 32);
 		Sprite heart = new Sprite(new SpriteSheet("/gui/heart.png"));
 		Sprite emptyHeart = new Sprite(new SpriteSheet("/gui/emptyheart.png"));
@@ -542,6 +577,8 @@ public class UIManager {
 		health.add(new UIImage(new Vector2f(104, 8), 16, 16, heart));
 		health.add(new UIImage(new Vector2f(136, 8), 16, 16, heart));
 		
+		
+		//CONTROL ICONS
 		arrow = new UIContainer(new Vector2f(24, game.renderer.height - 56), 32, 32);
 		arrow.add(new UIImage(new Vector2f(), 32, 32, new Sprite(new SpriteSheet("/gui/arrow.png"))));
 		
@@ -551,6 +588,106 @@ public class UIManager {
 		rope = new UIContainer(new Vector2f(96, game.renderer.height - 56), 32, 32);
 		rope.add(new UIImage(new Vector2f(), 32, 32, new Sprite(new SpriteSheet("/gui/rope.png"))));
 		
+		restart = new UIContainer(new Vector2f(132, game.renderer.height - 56), 32, 32);
+		restart.add(new UIImage(new Vector2f(), 32, 32, new Sprite(new SpriteSheet("/gui/restart.png"))));
+		
+		
+		//RESTART CONFIRMATION MENU
+		restartConfirmation = new UIContainer(new Vector2f(game.renderer.width / 2 - 240, 24), 480, 360);
+		restartConfirmation.visible = false;
+		
+		UIButton restartConfirmationTextButton = new UIButton(new Vector2f(restartConfirmation.width / 2 - 160, 0), 320, 64, 0xff00ff);
+		//Z IS A PLACEHOLDER FOR QUESTION MARK
+		restartConfirmationTextButton.string = "RESTARTZ";
+		restartConfirmationTextButton.scale = 6;
+		UIButton restartConfirmationYesButton = new UIButton(new Vector2f(restartConfirmation.width / 2 - 128, restartConfirmation.height - 236), 256, 48, 0x999999);
+		restartConfirmationYesButton.string = "YES";
+		restartConfirmationYesButton.scale = 3;
+		UIButton restartConfirmationNoButton = new UIButton(new Vector2f(restartConfirmation.width / 2 - 128, restartConfirmation.height - 180), 256, 48, 0x777777);
+		restartConfirmationNoButton.string = "NO";
+		restartConfirmationNoButton.scale = 3;
+		
+		restartConfirmationYesButton.setEventHandler(new UIEventHandler() {
+			@Override
+			public void leftClick() {
+			}
+			@Override
+			public void midClick() {
+			}
+			@Override
+			public void rightClick() {
+			}
+			@Override
+			public void leftRelease() {
+				game.paused = false;
+				game.failed = true;
+				game.gameover();
+			}
+			@Override
+			public void midRelease() {
+			}
+			@Override
+			public void rightRelease() {
+			}
+			@Override
+			public void hoverEnter() {
+				restartConfirmationYesButton.sprite = new Sprite(0x999999, restartConfirmationYesButton.width, restartConfirmationYesButton.height);
+			}
+			@Override
+			public void hoverExit() {
+				restartConfirmationYesButton.sprite = new Sprite(0x777777, restartConfirmationYesButton.width, restartConfirmationYesButton.height);
+			}
+			@Override
+			public void keyInput(int key) {
+			}
+		});
+		
+		restartConfirmationNoButton.setEventHandler(new UIEventHandler() {
+			@Override
+			public void leftClick() {
+			}
+			@Override
+			public void midClick() {
+			}
+			@Override
+			public void rightClick() {
+			}
+			@Override
+			public void leftRelease() {
+				game.paused = false;
+				game.failed = false;
+				restartConfirmation.visible = false;
+				health.visible = true;
+				arrow.visible = true;
+				jump.visible = true;
+				rope.visible = true;
+				restart.visible = true;
+			}
+			@Override
+			public void midRelease() {
+			}
+			@Override
+			public void rightRelease() {
+			}
+			@Override
+			public void hoverEnter() {
+				restartConfirmationNoButton.sprite = new Sprite(0x999999, restartConfirmationNoButton.width, restartConfirmationNoButton.height);
+			}
+			@Override
+			public void hoverExit() {
+				restartConfirmationNoButton.sprite = new Sprite(0x777777, restartConfirmationNoButton.width, restartConfirmationNoButton.height);
+			}
+			@Override
+			public void keyInput(int key) {
+			}
+		});
+		
+		restartConfirmation.add(restartConfirmationTextButton);
+		restartConfirmation.add(restartConfirmationYesButton);
+		restartConfirmation.add(restartConfirmationNoButton);
+		
+		
+		//GAMEOVER SCREEN
 		gameover = new UIContainer(new Vector2f(game.renderer.width / 2 - 240, 24), 480, 360);
 		gameover.visible = false;
 		
@@ -674,9 +811,11 @@ public class UIManager {
 		containers.add(arrow);
 		containers.add(jump);
 		containers.add(rope);
+		containers.add(restart);
 		containers.add(main);
 		containers.add(controls);
 		containers.add(options);
+		containers.add(restartConfirmation);
 		containers.add(gameover);
 		containers.add(name);
 		containers.add(table);

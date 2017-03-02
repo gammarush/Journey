@@ -60,6 +60,13 @@ public class Player {
 		//GRAB KEY ARRAY FROM LISTENER CLASS
 		boolean[] keys = game.listener.keys;
 		
+		if(keys[82] && !(game.complete || game.failed)) {
+			//RESTART GAME
+			game.paused = true;
+			game.failed = true;
+			game.restartConfirmation();
+		}
+		
 		//TEST FOR GAMEOVER
 		if(lives <= 0) {
 			game.failed = true;
@@ -96,7 +103,7 @@ public class Player {
 		}
 		
 		//IF E IS PRESSED, SPAWN LADDER ABOVE PLAYER IF POSSIBLE
-		if(keys[69] && ((game.ladders.size() == 0) || (game.ladders.size() > 0 && game.ladders.get(0).height >= Tile.height)) && (!game.complete || !game.failed)) {
+		if(keys[69] && ((game.ladders.size() == 0) || (game.ladders.size() > 0 && game.ladders.get(0).height >= Tile.height)) && !(game.complete || game.failed)) {
 			int wx = (int) Math.floor(position.x / Tile.width);
 			int wy = (int) Math.floor(position.y / Tile.height);
 			int lx = Integer.MIN_VALUE, ly = Integer.MIN_VALUE;
@@ -240,6 +247,10 @@ public class Player {
 		position = position.add(velocity);
 		Vector2f translation = physics.collision(position);
 		position = position.add(translation);
+		
+		//STAY IN THE MAP
+		if(position.x < 11 * Tile.width) position.x = 11 * Tile.width;
+		if(position.x > game.world.width * Tile.width - 12 * Tile.width) position.x = game.world.width * Tile.width - 12 * Tile.width;
 		
 		//SET VELOCITY BACK TO INITIAL BEFORE PLAYER INPUT
 		velocity = initial;
