@@ -124,14 +124,28 @@ public class Game implements Runnable {
 	public void pause() {
 		if(!gui.gameover.visible && !gui.restartConfirmation.visible) {
 			paused = true;
+			
 			gui.main.visible = true;
+			
+			gui.health.visible = false;
+			gui.arrow.visible = false;
+			gui.jump.visible = false;
+			gui.rope.visible = false;
+			gui.restart.visible = false;
 		}
 	}
 	
 	//UNPAUSE GAME
 	public void play() {
 		paused = false;
+		
 		gui.main.visible = false;
+		
+		gui.health.visible = true;
+		gui.arrow.visible = true;
+		gui.jump.visible = true;
+		gui.rope.visible = true;
+		gui.restart.visible = true;
 	}
 
 	//RUN METHOD FOR GAME THREAD
@@ -265,7 +279,7 @@ public class Game implements Runnable {
 		new Tile(6, true, 2, new Sprite(new SpriteSheet("/tiles/tile5.png")));
 		
 		world = new World(256, 256, this);
-		int[] seeds = new int[] {101, 123, 223, 234, 330, 334, 345, 444, 505, 543, 556, 567, 808};
+		int[] seeds = new int[] {101, 123, 223, 234, 334, 345, 444, 505, 543, 556, 567, 808};
 		world.generate(seeds[(int) (Math.random() * seeds.length)]);
 		player = new Player(new Vector2f(world.width / 2 * Tile.width, -1 * Tile.height), this);
 		//player = new Player(new Vector2f(world.width / 2 * Tile.width, world.levels[2] * Tile.height), this);
@@ -289,7 +303,7 @@ public class Game implements Runnable {
 		pause();
 		
 		world = new World(256, 256, this);
-		int[] seeds = new int[] {101, 123, 223, 234, 330, 334, 345, 444, 505, 543, 556, 567, 808};
+		int[] seeds = new int[] {101, 123, 223, 234, 334, 345, 444, 505, 543, 556, 567, 808};
 		world.generate(seeds[(int) (Math.random() * seeds.length)]);
 		player = new Player(new Vector2f(world.width / 2 * Tile.width, -1 * Tile.height), this);
 	}

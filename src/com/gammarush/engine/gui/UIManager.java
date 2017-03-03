@@ -29,6 +29,11 @@ public class UIManager {
 	public UIContainer controls;
 	public UIContainer options;
 	
+	//GUI CONTROL ICONS
+	public UIContainer scrollIcon;
+	public UIContainer selectIcon;
+	public UIContainer backIcon;
+	
 	//GENERAL GAMEOVER COMPONENTS CONTAINER
 	public UIContainer gameover;
 	
@@ -81,6 +86,19 @@ public class UIManager {
 		for(int i = 5; i < health.components.size(); i++) {
 			if(i - 5 < game.player.lives) health.components.get(i).visible = true;
 			else health.components.get(i).visible = false;
+		}
+		
+		//CONTROLLER FOR UI ICONS
+		if(main.visible || restartConfirmation.visible) {
+			scrollIcon.visible = true;
+			selectIcon.visible = true;
+			if(controls.visible || options.visible) backIcon.visible = true;
+			else backIcon.visible = false;
+		}
+		else {
+			scrollIcon.visible = false;
+			selectIcon.visible = false;
+			backIcon.visible = false;
 		}
 		
 		//KEYBOARD MAIN MENU GUI
@@ -581,15 +599,30 @@ public class UIManager {
 		//CONTROL ICONS
 		arrow = new UIContainer(new Vector2f(24, game.renderer.height - 56), 32, 32);
 		arrow.add(new UIImage(new Vector2f(), 32, 32, new Sprite(new SpriteSheet("/gui/arrow.png"))));
+		arrow.visible = false;
 		
 		jump = new UIContainer(new Vector2f(60, game.renderer.height - 56), 32, 32);
 		jump.add(new UIImage(new Vector2f(), 32, 32, new Sprite(new SpriteSheet("/gui/jump.png"))));
+		jump.visible = false;
 		
 		rope = new UIContainer(new Vector2f(96, game.renderer.height - 56), 32, 32);
 		rope.add(new UIImage(new Vector2f(), 32, 32, new Sprite(new SpriteSheet("/gui/rope.png"))));
+		rope.visible = false;
 		
 		restart = new UIContainer(new Vector2f(132, game.renderer.height - 56), 32, 32);
 		restart.add(new UIImage(new Vector2f(), 32, 32, new Sprite(new SpriteSheet("/gui/restart.png"))));
+		restart.visible = false;
+		
+		
+		//GUI CONTROL ICONS
+		scrollIcon = new UIContainer(new Vector2f(24, game.renderer.height - 56), 32, 32);
+		scrollIcon.add(new UIImage(new Vector2f(), 32, 32, new Sprite(new SpriteSheet("/gui/scroll.png"))));
+		
+		selectIcon = new UIContainer(new Vector2f(60, game.renderer.height - 56), 32, 32);
+		selectIcon.add(new UIImage(new Vector2f(), 32, 32, new Sprite(new SpriteSheet("/gui/select.png"))));
+		
+		backIcon = new UIContainer(new Vector2f(96, game.renderer.height - 56), 32, 32);
+		backIcon.add(new UIImage(new Vector2f(), 32, 32, new Sprite(new SpriteSheet("/gui/back.png"))));
 		
 		
 		//RESTART CONFIRMATION MENU
@@ -819,6 +852,10 @@ public class UIManager {
 		containers.add(gameover);
 		containers.add(name);
 		containers.add(table);
+		containers.add(scrollIcon);
+		containers.add(selectIcon);
+		containers.add(backIcon);
+		
 		containers.add(cover);
 	}
 	
