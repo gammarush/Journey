@@ -1,6 +1,8 @@
 package com.gammarush.engine;
 
 import java.awt.Graphics;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.image.BufferStrategy;
@@ -94,6 +96,7 @@ public class Game implements Runnable {
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 		
+		
 		//INIT LISTENER, RENDERER, AND GUI MANAGER
 		listener = new Listener(this);
 		renderer = new Renderer(width, height, this);
@@ -101,6 +104,9 @@ public class Game implements Runnable {
 		
 		//LOOP BACKGROUND MUSIC
 		Sound.loop("/sounds/poorlilrich.wav", -25f);
+		
+		//SET FULLSCREEN
+		renderer.setFullScreen(true);
 	}
 	
 	//START GAME THREAD
@@ -194,6 +200,7 @@ public class Game implements Runnable {
 				frames = 0;
 				
 				//frame.setTitle("Journey [FPS: " + fps + "]");
+				//System.out.println(fps);
 			}
 		}
 		stop();
@@ -241,6 +248,7 @@ public class Game implements Runnable {
 		}
 		//UPDATE GUI EVEN IF PAUSED
 		gui.update();
+		renderer.update();
 	}
 
 	//MASTER RENDER METHOD
@@ -279,7 +287,7 @@ public class Game implements Runnable {
 		new Tile(6, true, 2, new Sprite(new SpriteSheet("/tiles/tile5.png")));
 		
 		world = new World(256, 256, this);
-		int[] seeds = new int[] {101, 123, 223, 234, 334, 345, 444, 505, 543, 556, 567, 808};
+		int[] seeds = new int[] {101, 123, 223, 234, 334, 345, 444, 543, 556, 567, 808};
 		world.generate(seeds[(int) (Math.random() * seeds.length)]);
 		player = new Player(new Vector2f(world.width / 2 * Tile.width, -1 * Tile.height), this);
 		//player = new Player(new Vector2f(world.width / 2 * Tile.width, world.levels[2] * Tile.height), this);
@@ -303,7 +311,7 @@ public class Game implements Runnable {
 		pause();
 		
 		world = new World(256, 256, this);
-		int[] seeds = new int[] {101, 123, 223, 234, 334, 345, 444, 505, 543, 556, 567, 808};
+		int[] seeds = new int[] {101, 123, 223, 234, 334, 345, 444, 543, 556, 567, 808};
 		world.generate(seeds[(int) (Math.random() * seeds.length)]);
 		player = new Player(new Vector2f(world.width / 2 * Tile.width, -1 * Tile.height), this);
 	}

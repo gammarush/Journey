@@ -130,14 +130,14 @@ public class UIManager {
 			if(game.listener.keys[38]) {
 				options.components.get(optionsSelectedIndex).activate(EventType.HOVEREXIT);
 				optionsSelectedIndex--;
-				if(optionsSelectedIndex < 2) optionsSelectedIndex = 3;
+				if(optionsSelectedIndex < 2) optionsSelectedIndex = 5;
 				options.components.get(optionsSelectedIndex).activate(EventType.HOVERENTER);
 				game.listener.keys[38] = false;
 			}
 			if(game.listener.keys[40]) {
 				options.components.get(optionsSelectedIndex).activate(EventType.HOVEREXIT);
 				optionsSelectedIndex++;
-				if(optionsSelectedIndex > 3) optionsSelectedIndex = 2;
+				if(optionsSelectedIndex > 5) optionsSelectedIndex = 2;
 				options.components.get(optionsSelectedIndex).activate(EventType.HOVERENTER);
 				game.listener.keys[40] = false;
 			}
@@ -450,6 +450,11 @@ public class UIManager {
 		transparencyButton.string = "TOGGLE TRANSPARENCY";
 		UIButton blendMapsButton = new UIButton(new Vector2f(4, 76), 248, 32, 0x008000);
 		blendMapsButton.string = "TOGGLE BLEND MAPS";
+		UIButton cameraScrollingButton = new UIButton(new Vector2f(4, 112), 248, 32, 0x008000);
+		cameraScrollingButton.string = "TOGGLE SMOOTH CAMERA";
+		cameraScrollingButton.scale = 2;
+		UIButton fullScreenButton = new UIButton(new Vector2f(4, 148), 248, 32, 0x008000);
+		fullScreenButton.string = "TOGGLE FULL SCREEN";
 		
 		optionsExitButton.setEventHandler(new UIEventHandler() {
 			@Override
@@ -566,10 +571,95 @@ public class UIManager {
 			}
 		});
 		
+		cameraScrollingButton.setEventHandler(new UIEventHandler() {
+			@Override
+			public void leftClick() {
+			}
+			@Override
+			public void midClick() {
+			}
+			@Override
+			public void rightClick() {
+			}
+			@Override
+			public void leftRelease() {
+				if(game.renderer.useCameraScrolling) {
+					game.renderer.useCameraScrolling = false;
+					cameraScrollingButton.sprite = new Sprite(0xff3232, cameraScrollingButton.width, cameraScrollingButton.height);
+				}
+				else {
+					game.renderer.useCameraScrolling = true;
+					cameraScrollingButton.sprite = new Sprite(0x329932, cameraScrollingButton.width, cameraScrollingButton.height);
+				}
+			}
+			@Override
+			public void midRelease() {
+			}
+			@Override
+			public void rightRelease() {
+			}
+			@Override
+			public void hoverEnter() {
+				if(game.renderer.useCameraScrolling) cameraScrollingButton.sprite = new Sprite(0x329932, cameraScrollingButton.width, cameraScrollingButton.height);
+				else cameraScrollingButton.sprite = new Sprite(0xff3232, cameraScrollingButton.width, cameraScrollingButton.height);
+			}
+			@Override
+			public void hoverExit() {
+				if(game.renderer.useCameraScrolling) cameraScrollingButton.sprite = new Sprite(0x008000, cameraScrollingButton.width, cameraScrollingButton.height);
+				else cameraScrollingButton.sprite = new Sprite(0xff0000, cameraScrollingButton.width, cameraScrollingButton.height);
+			}
+			@Override
+			public void keyInput(int key) {
+			}
+		});
+		
+		fullScreenButton.setEventHandler(new UIEventHandler() {
+			@Override
+			public void leftClick() {
+			}
+			@Override
+			public void midClick() {
+			}
+			@Override
+			public void rightClick() {
+			}
+			@Override
+			public void leftRelease() {
+				if(game.renderer.useFullScreen) {
+					fullScreenButton.sprite = new Sprite(0xff3232, fullScreenButton.width, fullScreenButton.height);
+				}
+				else {
+					fullScreenButton.sprite = new Sprite(0x329932, fullScreenButton.width, fullScreenButton.height);
+				}
+				game.renderer.setFullScreen(!game.renderer.useFullScreen);
+			}
+			@Override
+			public void midRelease() {
+			}
+			@Override
+			public void rightRelease() {
+			}
+			@Override
+			public void hoverEnter() {
+				if(game.renderer.useFullScreen) fullScreenButton.sprite = new Sprite(0x329932, fullScreenButton.width, fullScreenButton.height);
+				else fullScreenButton.sprite = new Sprite(0xff3232, fullScreenButton.width, fullScreenButton.height);
+			}
+			@Override
+			public void hoverExit() {
+				if(game.renderer.useFullScreen) fullScreenButton.sprite = new Sprite(0x008000, fullScreenButton.width, fullScreenButton.height);
+				else fullScreenButton.sprite = new Sprite(0xff0000, fullScreenButton.width, fullScreenButton.height);
+			}
+			@Override
+			public void keyInput(int key) {
+			}
+		});
+		
 		options.add(optionsTextBox);
 		options.add(optionsExitButton);
 		options.add(transparencyButton);
 		options.add(blendMapsButton);
+		options.add(cameraScrollingButton);
+		options.add(fullScreenButton);
 		
 		
 		//SCORE AND LEVEL TEXTBOX
@@ -631,7 +721,7 @@ public class UIManager {
 		
 		UIButton restartConfirmationTextButton = new UIButton(new Vector2f(restartConfirmation.width / 2 - 160, 0), 320, 64, 0xff00ff);
 		//Z IS A PLACEHOLDER FOR QUESTION MARK
-		restartConfirmationTextButton.string = "RESTARTZ";
+		restartConfirmationTextButton.string = "RESTART";
 		restartConfirmationTextButton.scale = 6;
 		UIButton restartConfirmationYesButton = new UIButton(new Vector2f(restartConfirmation.width / 2 - 128, restartConfirmation.height - 236), 256, 48, 0x999999);
 		restartConfirmationYesButton.string = "YES";

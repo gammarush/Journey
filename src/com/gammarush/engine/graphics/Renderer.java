@@ -1,5 +1,7 @@
 package com.gammarush.engine.graphics;
 
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -7,6 +9,8 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 import com.gammarush.engine.Game;
+import com.gammarush.engine.math.Mathf;
+import com.gammarush.engine.math.vector.Vector2f;
 import com.gammarush.engine.math.vector.Vector2i;
 
 //CLASS IN CHARGE OF ALL RENDERING IN THE GAME
@@ -24,6 +28,19 @@ public class Renderer {
 	//GRAPHICS PERFORMANCE OPTIONS
 	public boolean useTransparency = true;
 	public boolean useBlendMaps = true;
+	public boolean useCameraScrolling = true;
+	public boolean useFullScreen = true;
+	
+	//SMOOTH CAMERA PROPERTIES
+	private float lookAheadDstX = 16f;
+	private float lookSmoothTimeX = .2f;
+	private float verticalSmoothTime = .1f;
+	
+	private float currentLookAheadX;
+	private float targetLookAheadX;
+	private float lookAheadDirX;
+	private float smoothLookVelocityX;
+	private float smoothVelocityY;
 	
 	public Renderer(int width, int height, Game game) {
 		this.game = game;
@@ -42,11 +59,33 @@ public class Renderer {
 		}
 	}
 	
-	public void render() {
+	public void update() {
 		//SET CAMERA POSITION TO AN OFFSET OF PLAYER POSITION
-		position.x = (int) (game.player.position.x - width / 2 + game.player.width / 2);
-		position.y = (int) (game.player.position.y - height / 2 + game.player.height / 2);
-		
+		if(useCameraScrolling) {
+			Vector2f focusPosition = game.player.focusArea.getCenter();
+			
+			if(game.player.focusAreaVelocity.x != 0) lookAheadDirX = Mathf.sign(game.player.focusAreaVelocity.x);
+			targetLookAheadX = lookAheadDirX * lookAheadDstX;
+			
+			float[] smoothDamp = Mathf.smoothDamp(currentLookAheadX, targetLookAheadX, smoothLookVelocityX, lookSmoothTimeX);
+			currentLookAheadX = smoothDamp[0];
+			smoothLookVelocityX = smoothDamp[1];
+			
+			float[] smoothDampVertical = Mathf.smoothDamp(position.y + height / 2, focusPosition.y, smoothVelocityY, verticalSmoothTime);
+			focusPosition.y = smoothDampVertical[0];
+			smoothVelocityY = smoothDampVertical[1];
+					
+			focusPosition = focusPosition.add(new Vector2f(1, 0).mult(currentLookAheadX));
+			position.x = (int) (focusPosition.x - width / 2);
+			position.y = (int) (focusPosition.y - height / 2);
+		}
+		else {
+			position.x = (int) (game.player.position.x - width / 2 + game.player.width / 2);
+			position.y = (int) (game.player.position.y - height / 2 + game.player.height / 2);
+		}
+	}
+	
+	public void render() {
 		//RENDER WORLD TILES FIRST
 		game.world.render(this);
 		
@@ -62,6 +101,7 @@ public class Renderer {
 		
 		//RENDER PLAYER NEXT
 		game.player.render(this);
+		//Graphic2D.drawCircle((int) (center.x - position.x), (int) (center.y - position.y), 4, 0xff0000, this);
 		
 		//RENDER ALL ENEMIES (BOSS, ENEMY, AND SPIDER) NEXT
 		for(int i = 0; i < game.enemies.size(); i++) {
@@ -100,6 +140,21 @@ public class Renderer {
 		game.gui.render(this);
 		
 		//game.world.sprite.render(8, 80, this);
+	}
+	
+	//SET FULL SCREEN
+	public void setFullScreen(boolean useFullScreen) {
+		GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+	    if(useFullScreen) {
+	    	if(device.isFullScreenSupported()) {
+	    		device.setFullScreenWindow(game.frame);
+	    		this.useFullScreen = useFullScreen;
+	    	}
+	    }
+	    else {
+	    	device.setFullScreenWindow(null);
+	    	this.useFullScreen = useFullScreen;
+	    }
 	}
 	
 	//SCREENSHOT GAME AND STORE IN SCREENSHOTS FOLDER

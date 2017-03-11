@@ -3,6 +3,7 @@ package com.gammarush.engine.entities;
 import java.util.ArrayList;
 
 import com.gammarush.engine.Game;
+import com.gammarush.engine.graphics.Graphic2D;
 import com.gammarush.engine.graphics.Renderer;
 import com.gammarush.engine.graphics.Sprite;
 import com.gammarush.engine.graphics.SpriteSheet;
@@ -42,12 +43,17 @@ public class Player {
 	
 	public ParticleEmitter emitter;
 	
+	public AABB focusArea;
+	public Vector2f focusAreaVelocity = new Vector2f();
+	
 	public Player(Vector2f position, Game game) {
 		this.game = game;
 		this.position = position;
 		
 		physics = new Physics(width, width, game);
 		velocity = new Vector2f();
+		
+		focusArea = new AABB(position.x, position.y, Tile.width, Tile.height);
 		
 		for(int i = 0; i < 4; i++) {
 			for(int j = 0; j < 4; j++) {
@@ -143,7 +149,17 @@ public class Player {
 		//CLIMB LADDER IF COLLIDING WITH ONE
 		for(int i = 0; i < game.ladders.size(); i++) {
 			Ladder e = game.ladders.get(i);
-			if(Physics.getCollision(box, new AABB(e.position, e.width, e.height))) {
+			if(Physics.getCollision(box, new AABB(e.position/*.add(0, -Tile.width)*/, e.width, e.height/* + Tile.width*/))) {
+				//ALIGN PLAYER WITH LADDER FOR EASIER CLIMBING
+				if(keys[87]) {
+					float step = 1f;
+					float x = (float) (Math.floor(e.position.x  / Tile.width) * Tile.width);
+					if(position.x < x) position.x += step;
+					if(position.x > x) position.x -= step;
+					
+					//STOP BOUNCING VISUAL GLITCH ON ROPE
+					if(position.y < e.position.y - Tile.width + 4) position.y = e.position.y - Tile.width + 4;
+				}
 				climbing = true;
 			}
 		}
@@ -260,6 +276,30 @@ public class Player {
 			falling = false;
 		}
 		
+		
+		
+		//UPDATE FOCUS AREA FOR CAMERA
+		float shiftX = 0;
+		if(position.x < focusArea.getMin().x) {
+			shiftX = position.x - focusArea.getMin().x;
+		}
+		else if(position.x + width > focusArea.getMax().x) {
+			shiftX = position.x + width - focusArea.getMax().x;
+		}
+		focusArea.x += shiftX;
+		
+		float shiftY = 0;
+		if(position.y < focusArea.getMin().y) {
+			shiftY = position.y - focusArea.getMin().y;
+		}
+		else if(position.y + width > focusArea.getMax().y) {
+			shiftY = position.y + width - focusArea.getMax().y;
+		}
+		focusArea.y += shiftY;
+		
+		focusAreaVelocity = new Vector2f(shiftX, shiftY);
+		
+		
 		//UPDATE SPRITE ANIMATION INDEX
 		if(moving) {
 			if(frame < max) {
@@ -282,6 +322,9 @@ public class Player {
 		//RENDER PLAYER SPRITE WITH CORRECT ANIMATION INDEX
 		//IF DAMAGED, BLINK SPRITE
 		if(cooldown % 3 == 0) sprites.get(index + direction * 4).render((int) (position.x - renderer.position.x), (int) (position.y - renderer.position.y - (height - width)), renderer);
+		
+		//REMOVE LATER
+		if(game.listener.keys[84]) Graphic2D.drawRect((int) (focusArea.x - renderer.position.x), (int) (focusArea.y - renderer.position.y), (int) focusArea.width, (int) focusArea.height, 0xffff00, 0.5f, renderer);
 	}
 
 }

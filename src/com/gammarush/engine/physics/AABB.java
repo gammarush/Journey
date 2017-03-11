@@ -32,5 +32,9 @@ public class AABB {
 	public Vector2f getMax() {
 		return new Vector2f(x + width, y + height);
 	}
+	
+	public Vector2f getCenter() {
+		return new Vector2f(x + width / 2, y + height / 2);
+	}
 
 }
