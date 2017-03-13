@@ -29,7 +29,7 @@ public class Renderer {
 	public boolean useTransparency = true;
 	public boolean useBlendMaps = true;
 	public boolean useCameraScrolling = true;
-	public boolean useFullScreen = true;
+	public boolean useFullScreen = false;
 	
 	//SMOOTH CAMERA PROPERTIES
 	private float lookAheadDstX = 16f;
@@ -147,11 +147,13 @@ public class Renderer {
 		GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
 	    if(useFullScreen) {
 	    	if(device.isFullScreenSupported()) {
+	    		game.frame.setResizable(false);
 	    		device.setFullScreenWindow(game.frame);
 	    		this.useFullScreen = useFullScreen;
 	    	}
 	    }
 	    else {
+	    	game.frame.setResizable(true);
 	    	device.setFullScreenWindow(null);
 	    	this.useFullScreen = useFullScreen;
 	    }

@@ -21,6 +21,8 @@ import com.gammarush.engine.tiles.Tile;
 
 public class World {
 	
+	private static int[] seeds = new int[] {101, 223, 234, 334, 444, 543, 567, 808};
+	
 	public Game game;
 	public int width;
 	public int height;
@@ -479,6 +481,21 @@ public class World {
 			pixels[i] = (int) ((array[i] / 5f) * 0xffffff);
 		}
 		sprite = new Sprite(pixels, width, height);
+	}
+	
+	public Vector2f getStartPosition() {
+		int x = width / 2;
+		boolean solidStart = getTile(x, 0) != 0;
+		
+		for(int i = 0; i < width / 2 - 16; i++) {
+			if(getTile(x + i, 0) == (solidStart ? 0 : 1)) return new Vector2f(x + i - (solidStart ? 1 : 0), -1);
+			if(getTile(x - i, 0) == (solidStart ? 0 : 1)) return new Vector2f(x - i + (solidStart ? 1 : 0), -1);
+		}
+		return new Vector2f(x, -1);
+	}
+	
+	public static int getRandomSeed() {
+		return seeds[(int) (Math.random() * seeds.length)];
 	}
 	
 }

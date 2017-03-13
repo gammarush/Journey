@@ -1,8 +1,6 @@
 package com.gammarush.engine;
 
 import java.awt.Graphics;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.image.BufferStrategy;
@@ -27,7 +25,6 @@ import com.gammarush.engine.graphics.SpriteSheet;
 import com.gammarush.engine.gui.Score;
 import com.gammarush.engine.gui.UIManager;
 import com.gammarush.engine.listener.Listener;
-import com.gammarush.engine.math.vector.Vector2f;
 import com.gammarush.engine.particles.ParticleEmitter;
 import com.gammarush.engine.sound.Sound;
 import com.gammarush.engine.tiles.Tile;
@@ -103,7 +100,7 @@ public class Game implements Runnable {
 		gui = new UIManager(this);
 		
 		//LOOP BACKGROUND MUSIC
-		Sound.loop("/sounds/poorlilrich.wav", -25f);
+		Sound.loop("/sounds/music1.wav", -25f);
 		
 		//SET FULLSCREEN
 		renderer.setFullScreen(true);
@@ -287,9 +284,8 @@ public class Game implements Runnable {
 		new Tile(6, true, 2, new Sprite(new SpriteSheet("/tiles/tile5.png")));
 		
 		world = new World(256, 256, this);
-		int[] seeds = new int[] {101, 123, 223, 234, 334, 345, 444, 543, 556, 567, 808};
-		world.generate(seeds[(int) (Math.random() * seeds.length)]);
-		player = new Player(new Vector2f(world.width / 2 * Tile.width, -1 * Tile.height), this);
+		world.generate(World.getRandomSeed());
+		player = new Player(world.getStartPosition().mult(Tile.width, Tile.height), this);
 		//player = new Player(new Vector2f(world.width / 2 * Tile.width, world.levels[2] * Tile.height), this);
 	}
 	
@@ -311,9 +307,8 @@ public class Game implements Runnable {
 		pause();
 		
 		world = new World(256, 256, this);
-		int[] seeds = new int[] {101, 123, 223, 234, 334, 345, 444, 543, 556, 567, 808};
-		world.generate(seeds[(int) (Math.random() * seeds.length)]);
-		player = new Player(new Vector2f(world.width / 2 * Tile.width, -1 * Tile.height), this);
+		world.generate(World.getRandomSeed());
+		player = new Player(world.getStartPosition().mult(Tile.width, Tile.height), this);
 	}
 	
 	//CALLED ON PLAYER DEATH OR GAME COMPLETION (GAME OVER)

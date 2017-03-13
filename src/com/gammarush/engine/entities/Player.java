@@ -3,7 +3,6 @@ package com.gammarush.engine.entities;
 import java.util.ArrayList;
 
 import com.gammarush.engine.Game;
-import com.gammarush.engine.graphics.Graphic2D;
 import com.gammarush.engine.graphics.Renderer;
 import com.gammarush.engine.graphics.Sprite;
 import com.gammarush.engine.graphics.SpriteSheet;
@@ -81,10 +80,12 @@ public class Player {
 		
 		//CHECK FOR COMPLETION OF A LEVEL AND ADD POINTS TO SCORE
 		if(position.y / Tile.height > game.world.levels[1] && game.level == 1) {
+			Sound.play("/sounds/level.wav", -15f);
 			game.level++;
 			game.score += 100;
 		}
 		if(position.y / Tile.height > game.world.levels[2] && game.level == 2) {
+			Sound.play("/sounds/level.wav", -15f);
 			game.level++;
 			game.score += 200;
 		}
@@ -151,7 +152,7 @@ public class Player {
 			Ladder e = game.ladders.get(i);
 			if(Physics.getCollision(box, new AABB(e.position/*.add(0, -Tile.width)*/, e.width, e.height/* + Tile.width*/))) {
 				//ALIGN PLAYER WITH LADDER FOR EASIER CLIMBING
-				if(keys[87]) {
+				if(keys[87] || keys[38]) {
 					float step = 1f;
 					float x = (float) (Math.floor(e.position.x  / Tile.width) * Tile.width);
 					if(position.x < x) position.x += step;
@@ -168,6 +169,7 @@ public class Player {
 		for(int i = 0; i < game.items.size(); i++) {
 			Item e = game.items.get(i);
 			if(Physics.getCollision(box, new AABB(e.position, e.width, e.height))) {
+				Sound.play("/sounds/health.wav", -25f);
 				lives++;
 				if(lives > 5) lives = 5;
 				game.emitters.add(new ParticleEmitter(e.position.add(e.width / 2, e.height / 2), 1f, 10, new int[]{0xff0000, 0xb20000, 0xcc0000}, game));
@@ -196,6 +198,8 @@ public class Player {
 						if(e.lives <= 0) {
 							//YOU WIN, START END ANIMATIONS
 							if(e instanceof Boss) {
+								Sound.play("/sounds/level.wav", -15f);
+								
 								game.score += 100;
 								speed /= 4;
 								game.complete = true;
@@ -220,7 +224,8 @@ public class Player {
 				}
 				//ENEMY HIT PLAYER
 				else {
-					if(cooldown <= 0 && e.cooldown <= 0) {
+					if(cooldown <= 0 && e.cooldown <= 0 && lives > 0) {
+						Sound.play("/sounds/hurt.wav", -25f);
 						lives--;
 						cooldown = 60;
 					}
@@ -229,7 +234,8 @@ public class Player {
 		}
 		
 		//IF PLAYER IS IN LAVA, DAMAGE PLAYER
-		if(game.world.getWater((int)(position.x / Tile.width), (int)(position.y / Tile.height)) != 0 && cooldown <= 0 && !game.complete) {
+		if(game.world.getWater((int)(position.x / Tile.width), (int)(position.y / Tile.height)) != 0 && cooldown <= 0 && !game.complete && lives > 0) {
+			Sound.play("/sounds/hurt.wav", -25f);
 			lives--;
 			cooldown = 120;
 		}
@@ -322,9 +328,6 @@ public class Player {
 		//RENDER PLAYER SPRITE WITH CORRECT ANIMATION INDEX
 		//IF DAMAGED, BLINK SPRITE
 		if(cooldown % 3 == 0) sprites.get(index + direction * 4).render((int) (position.x - renderer.position.x), (int) (position.y - renderer.position.y - (height - width)), renderer);
-		
-		//REMOVE LATER
-		if(game.listener.keys[84]) Graphic2D.drawRect((int) (focusArea.x - renderer.position.x), (int) (focusArea.y - renderer.position.y), (int) focusArea.width, (int) focusArea.height, 0xffff00, 0.5f, renderer);
 	}
 
 }
