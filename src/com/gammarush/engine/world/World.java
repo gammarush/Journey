@@ -465,15 +465,19 @@ public class World {
 		ArrayList<Vector2i> tiles = getSpawnTiles(width / 2, height / 2, width / 2);
 		for(int i = 0; i < tiles.size(); i++) {
 			Vector2i spawn = tiles.get((int) (Math.random() * tiles.size()));
-			if(spawn.y < levels[2] * Tile.height) {
+			if(spawn.y > 6 * Tile.height && spawn.y < levels[2] * Tile.height) {
 				float random = (float) Math.random();
-				if(random < .05) game.enemies.add(new Enemy(new Vector2f(spawn), game));
-				else if(random < .1) game.enemies.add(new Spider(new Vector2f(spawn), game));
+				//SPIDERS ARE MORE RARE IN LEVEL 1
+				if(spawn.y < levels[1] * Tile.height) {
+					if(random < .01) game.enemies.add(new Spider(new Vector2f(spawn), game));
+					else if(random < .08) game.enemies.add(new Enemy(new Vector2f(spawn), game));
+				}
+				else {
+					if(random < .06) game.enemies.add(new Enemy(new Vector2f(spawn), game));
+					else if(random < .1) game.enemies.add(new Spider(new Vector2f(spawn), game));
+				}
 			}
 		}
-		
-		//GUARDS
-		//game.enemies.add(new Guard(new Vector2f(0 * Tile.width, -1 * Tile.height), game));
 		
 		//GENERATE WORLD SPRITE(TESTING ONLY)
 		int[] pixels = new int[width * height];

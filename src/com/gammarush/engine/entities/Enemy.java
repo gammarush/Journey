@@ -66,6 +66,12 @@ public class Enemy {
 			velocity = physics.gravity(velocity);
 		}
 		
+		//IF ENEMY IS IN LAVA, DAMAGE ENEMY
+		if(game.world.getWater((int)(position.x / Tile.width), (int)(position.y / Tile.height)) != 0 && cooldown <= 0 && lives > 0) {
+			lives--;
+			cooldown = 120;
+		}
+		
 		Vector2f initial = new Vector2f(velocity);
 		
 		//CALCULATE NEW TARGET WAYPOINT POSITION (PLAYER)

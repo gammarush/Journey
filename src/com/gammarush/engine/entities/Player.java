@@ -194,32 +194,6 @@ public class Player {
 						//SUBTRACT LIVES FROM ENEMY AND RESET COOLDOWN
 						e.lives--;
 						e.cooldown = 60;
-						//IF ENEMY OUT LIVES
-						if(e.lives <= 0) {
-							//YOU WIN, START END ANIMATIONS
-							if(e instanceof Boss) {
-								Sound.play("/sounds/level.wav", -15f);
-								
-								game.score += 100;
-								speed /= 4;
-								game.complete = true;
-								game.enemies.clear();
-								game.boats.clear();
-								game.boats.add(new Boat(new Vector2f(), new Vector2f(), game));
-								
-								game.gameover();
-							}
-							//30% CHANCE FOR HEALTH ITEM
-							if(Math.random() < .3) game.items.add(new Item(e.position, game));
-							//SPAWN PARTICLES
-							game.emitters.add(new ParticleEmitter(e.position.add(e.width / 2, e.height / 2), 1f, 20, new int[]{0xffffff, 0xaaaaaa, 0x777777}, game));
-							game.emitters.get(game.emitters.size() - 1).emit(45);
-							//REMOVE DEAD ENEMY
-							if(!game.complete) game.enemies.remove(i);
-							
-							if(e instanceof Enemy) game.score += 10;
-							if(e instanceof Spider) game.score += 25;
-						}
 					}
 				}
 				//ENEMY HIT PLAYER
@@ -230,6 +204,32 @@ public class Player {
 						cooldown = 60;
 					}
 				}
+			}
+			//IF ENEMY OUT LIVES
+			if(e.lives <= 0) {
+				//YOU WIN, START END ANIMATIONS
+				if(e instanceof Boss) {
+					Sound.play("/sounds/level.wav", -15f);
+					
+					game.score += 100;
+					speed /= 4;
+					game.complete = true;
+					game.enemies.clear();
+					game.boats.clear();
+					game.boats.add(new Boat(new Vector2f(), new Vector2f(), game));
+					
+					game.gameover();
+				}
+				//30% CHANCE FOR HEALTH ITEM
+				if(Math.random() < .3) game.items.add(new Item(e.position, game));
+				//SPAWN PARTICLES
+				game.emitters.add(new ParticleEmitter(e.position.add(e.width / 2, e.height / 2), 1f, 20, new int[]{0xffffff, 0xaaaaaa, 0x777777}, game));
+				game.emitters.get(game.emitters.size() - 1).emit(45);
+				//REMOVE DEAD ENEMY
+				if(!game.complete) game.enemies.remove(i);
+				
+				if(e instanceof Enemy) game.score += 10;
+				if(e instanceof Spider) game.score += 25;
 			}
 		}
 		

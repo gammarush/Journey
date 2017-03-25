@@ -203,7 +203,7 @@ public class Listener {
 		}
 		//game.world.setTile(3, (int) Math.floor((x + game.renderer.position.x) / Tile.width), (int) Math.floor((y + game.renderer.position.y) / Tile.height));
 		//game.world.setTile(3, (int) Math.floor((x + game.renderer.position.x) / Tile.width), (int) Math.floor((y + game.renderer.position.y) / Tile.height));
-		//game.enemies.add(new Enemy(game.world.path.get(0).mult(Tile.width, Tile.height), 32, 32, 100, 0xff0000, game));
+		//game.enemies.add(new Enemy(new Vector2f(x + game.renderer.position.x, y + game.renderer.position.y), game));
 	}
 	
 	public void leftRelease(int x, int y) {

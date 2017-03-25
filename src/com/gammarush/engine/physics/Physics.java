@@ -81,7 +81,7 @@ public class Physics {
 	}
 	
 	public Vector2f gravity(Vector2f velocity) {
-		if(velocity.y < Tile.height / 2) velocity.y += 1;
+		if(velocity.y < Tile.height / 2) velocity.y += 1f;
 		return velocity;
 	}
 	
